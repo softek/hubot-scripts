@@ -26,15 +26,20 @@ farewellResponses = [
   'See you later'
 ]
 
+isTalkingToMe = (msg, robot) ->
+  input = msg.matches.input.toLowerCase()
+  name = robot.name.toLowerCase()
+  input.indexOf(name) != -1
+
 module.exports = (robot) ->
-  robot.respond /(thanks|thank you|cheers|nice one)/i, (msg) ->
-    msg.reply msg.random responses
+  robot.hear /(thanks|thank you|cheers|nice one)/i, (msg) ->
+    msg.reply msg.random responses if isTalkingToMe(msg, robot)
 
-  robot.respond /(ty|thx)/i, (msg) ->
-    msg.reply msg.random shortResponses
+  robot.hear /(ty|thx)/i, (msg) ->
+    msg.reply msg.random shortResponses if isTalkingToMe(msg, robot)
 
-  robot.respond /(hello|hi|sup|howdy|good (morning|evening|afternoon))/i, (msg) ->
-    msg.reply "#{robot.name} at your service!"
+  robot.hear /(hello|hi|sup|howdy|good (morning|evening|afternoon))/i, (msg) ->
+    msg.reply "#{robot.name} at your service!" if isTalkingToMe(msg, robot)
     
-  robot.respond /(bye|night|goodbye|good night)/i, (msg) ->
-    msg.reply msg.random farewellResponses
+  robot.hear /(bye|night|goodbye|good night)/i, (msg) ->
+    msg.reply msg.random farewellResponses if isTalkingToMe(msg, robot)
