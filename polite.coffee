@@ -2,6 +2,8 @@
 #
 # Say thanks to your robot.
 
+util = require 'util'
+
 responses = [
   "You're welcome.",
   "No problem.",
@@ -27,7 +29,7 @@ farewellResponses = [
 ]
 
 isTalkingToMe = (msg, robot) ->
-  input = msg.text.toLowerCase()
+  input = msg.message.text.toLowerCase()
   name = robot.name.toLowerCase()
   input.indexOf(name) != -1
 
