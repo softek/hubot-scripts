@@ -27,7 +27,7 @@ farewellResponses = [
 ]
 
 isTalkingToMe = (msg, robot) ->
-  input = msg.matches.input.toLowerCase()
+  input = msg.text.toLowerCase()
   name = robot.name.toLowerCase()
   input.indexOf(name) != -1
 
