@@ -3,6 +3,8 @@ room = process.env.HUBOT_JENKINS_ROOM
 
 module.exports = (robot) ->
   robot.router.post '/hubot/jenkins', (req, res) ->
+    console.log req.body
+
     job = req.body.name
     phase = req.body.build.phase
     status = req.body.build.status
