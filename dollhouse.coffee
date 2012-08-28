@@ -1,13 +1,18 @@
 room = process.env.HUBOT_CI_ROOM
-ci_host = process.env.CI_HOST
 
 ci = (robot) ->
+
+   getImprint = (active) ->
+      robot.brain.imprints[active.toLowerCase()]
+
    robot.respond /(What( is|\'s|s) (.*)('s)? imprint[?]?/i, (msg) ->
       active = msg.match[1]
-      if !robot.brain.imprints[active.toLowerCase()]?
-         msg.send "There's no record of an active by the name of #{active}."
+      imprint = getImprint active
+
+      if imprint
+         msg.send "#{active} is imprinted with #{imprint}"
       else
-         msg.send "#{active} is imprinted with #{robot.brain.imprints[active]}"
+         msg.send "There's no record of an active by the name of #{active}."
 
    robot.respond /imprint (.*) with (.*)/i, (msg) ->
       active = msg.match[1]
@@ -16,27 +21,30 @@ ci = (robot) ->
 
    robot.respond /wipe (.*)/i, (msg) ->
       active = msg.match[1]
-
-      if !active?
+      
+      unless active
          msg.send 'What Active did you mean?' 
          return
+      
+      imprint = getImprint active
 
-      if !robot.brain.imprints[active.toLowerCase()]?
-         msg.send 'Sorry, you must specify the imprint for #{active}\'s engagement.'
-      else
-         imprint = robot.brain.imprints[active.toLowerCase()]
+      if imprint
          msg.send "Wiping #{active}. Imprinting #{imprint}."
-   
+      else
+         msg.send 'Sorry, #{active} is blank. Give #{active} an imprint with the command: imprint #{active} with <<IMPRINT>>'
+
    robot.router.get '/next-engagement/{active}', (req, res) ->
       active = req.params.active  
+      imprint = getImprint active
 
-      if !robot.brain.imprints[active.toLowerCase()]?
+      if imprint
+         res.writeHead 200, 'OK'
+         res.write robot.brain.imprints[active.toLowerCase()]
+      else
          res.writeHead 404, 'Not Found'
          res.write 'You are not scheduled for an engagement.'
          robot.messageRoom "Hey! #{active} is looking for their next imprint but I didn't know what to do."
-      else
-         res.writeHead 200, 'OK'
-         res.write robot.brain.imprints[active.toLowerCase()]
+
       res.end()
 
    robot.router.post '/engagement-complete', (req, res) ->
