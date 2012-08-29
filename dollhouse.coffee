@@ -1,6 +1,10 @@
 room = process.env.HUBOT_CI_ROOM
+spawn = require('child-process').spawn
 
 ci = (robot) ->
+
+   wipe = (active) ->
+      spawn 'vmware-revert', ['192.168.10.1', 'root', '', "illum-qa-#{active.toLowerCase()}"] 
 
    getImprint = (active) ->
       getImprints()[active.toLowerCase()]
@@ -44,6 +48,7 @@ ci = (robot) ->
 
       if imprint
          msg.send "Wiping #{active}. Imprinting #{imprint}."
+         wipe active
       else
          msg.send "Sorry, #{active} is blank. Give #{active} an imprint with the command: imprint #{active} with <<IMPRINT>>"
 
