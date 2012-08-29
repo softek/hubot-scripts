@@ -3,12 +3,22 @@ room = process.env.HUBOT_CI_ROOM
 ci = (robot) ->
 
    getImprint = (active) ->
-      robot.brain.imprints ||= {}
-      robot.brain.imprints[active.toLowerCase()]
+      getImprints()[active.toLowerCase()]
    
    setImprint = (active, imprint) ->
+      getImprints()[active.toLowerCase()] = imprint
+   
+   getImprints = () ->
       robot.brain.imprints ||= {}
-      robot.brain.imprints[active.toLowerCase()] = imprint
+
+   hasImprints = () ->
+      Object.keys(getImprints()).length > 0
+   
+   robot.respond /list (actives|imprints)/i, (msg) ->
+      if hasImprints()
+         msg.send "#{active}: #{imprint}" for active, imprint of getImprints()
+      else
+         msg.send "There are no actives."
 
    robot.respond /what(?: is|\'s|s) (\w+)'?s imprint[?]?/i, (msg) ->
       active = msg.match[1]
