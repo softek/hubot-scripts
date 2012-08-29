@@ -5,6 +5,10 @@ ci = (robot) ->
    getImprint = (active) ->
       robot.brain.imprints ||= {}
       robot.brain.imprints[active.toLowerCase()]
+   
+   setImprint = (active, imprint) ->
+      robot.brain.imprints ||= {}
+      robot.brain.imprints[active.toLowerCase()] = imprint
 
    robot.respond /what(?: is|\'s|s) (\w+)'?s imprint[?]?/i, (msg) ->
       active = msg.match[1]
@@ -17,7 +21,7 @@ ci = (robot) ->
 
    robot.respond /imprint (.*) with (.*)/i, (msg) ->
       active = msg.match[1]
-      robot.brain.imprints[active.toLowerCase()] = msg.match[2]    
+      setImprint active, msg.match[2]    
 
    robot.respond /wipe (.*)/i, (msg) ->
       active = msg.match[1]
