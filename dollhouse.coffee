@@ -3,9 +3,10 @@ room = process.env.HUBOT_CI_ROOM
 ci = (robot) ->
 
    getImprint = (active) ->
+      robot.brain.imprints ||= {}
       robot.brain.imprints[active.toLowerCase()]
 
-   robot.respond /(What( is|\'s|s) (.*)('s)? imprint[?]?/i, (msg) ->
+   robot.respond /what(?: is|\'s|s) (\w+)'?s imprint[?]?/i, (msg) ->
       active = msg.match[1]
       imprint = getImprint active
 
@@ -16,7 +17,6 @@ ci = (robot) ->
 
    robot.respond /imprint (.*) with (.*)/i, (msg) ->
       active = msg.match[1]
-      robot.brain.imprints ||= {}
       robot.brain.imprints[active.toLowerCase()] = msg.match[2]    
 
    robot.respond /wipe (.*)/i, (msg) ->
