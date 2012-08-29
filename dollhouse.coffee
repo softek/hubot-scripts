@@ -35,7 +35,7 @@ ci = (robot) ->
       if imprint
          msg.send "Wiping #{active}. Imprinting #{imprint}."
       else
-         msg.send 'Sorry, #{active} is blank. Give #{active} an imprint with the command: imprint #{active} with <<IMPRINT>>'
+         msg.send "Sorry, #{active} is blank. Give #{active} an imprint with the command: imprint #{active} with <<IMPRINT>>"
 
    robot.router.get '/next-engagement/{active}', (req, res) ->
       active = req.params.active  
