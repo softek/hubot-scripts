@@ -1,5 +1,5 @@
 room = process.env.HUBOT_CI_ROOM
-spawn = require('child-process').spawn
+spawn = require('child_process').spawn
 
 ci = (robot) ->
 
