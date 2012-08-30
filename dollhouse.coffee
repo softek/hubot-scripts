@@ -6,8 +6,10 @@ ci = (robot) ->
    user = process.env.HUBOT_CI_HOST_USERNAME
    password = process.env.HUBOT_CI_HOST_PASSWORD
 
-   wipe = (active) ->
-      spawn "vmware-revert", [host, user, password, "illum-qa-#{active.toLowerCase().trim()}"] 
+   wipe = (active, callback) ->
+      revert = spawn "vmware-revert", [host, user, password, "illum-qa-#{active.toLowerCase().trim()}"] 
+      revert.on 'exit', (code) ->
+         callback if code is 0 then code else null 
 
    getImprint = (active) ->
       getImprints()[active.toLowerCase().trim()]
@@ -50,8 +52,12 @@ ci = (robot) ->
       imprint = getImprint active
 
       if imprint
-         msg.send "Wiping #{active}. Imprinting #{imprint}."
-         wipe active
+         msg.send "Wiping #{active} and imprinting #{imprint}."
+         wipe active (err) ->
+            if err
+               msg.send "Oops! I had trouble starting the wipe for #{active}!"
+            else
+               msg.send "Wipe operation in progress."
       else
          msg.send "Sorry, #{active} is blank. Give #{active} an imprint with the command: imprint #{active} with <<IMPRINT>>"
 
@@ -62,10 +68,11 @@ ci = (robot) ->
       if imprint
          res.writeHead 200, "OK"
          res.write imprint
+         robot.messageRoom room, "#{active} checked in."
       else
          res.writeHead 404, "Not Found"
          res.write "You are not scheduled for an engagement."
-         robot.messageRoom "Hey! #{active} is looking for their next imprint but I didn't know what to do."
+         robot.messageRoom room, "Hey! #{active} is looking for their next imprint but I didn't know what to do."
 
       res.end()
 
