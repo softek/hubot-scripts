@@ -16,7 +16,7 @@ ci = (robot) ->
       getImprints()[active.toLowerCase().trim()] = imprint
    
    getImprints = () ->
-      robot.brain.imprints ||= {}
+      robot.brain.data.imprints ||= {}
 
    hasImprints = () ->
       Object.keys(getImprints()).length > 0
@@ -61,7 +61,7 @@ ci = (robot) ->
 
       if imprint
          res.writeHead 200, "OK"
-         res.write robot.brain.imprints[active.toLowerCase()]
+         res.write imprint
       else
          res.writeHead 404, "Not Found"
          res.write "You are not scheduled for an engagement."
