@@ -91,8 +91,9 @@ ci = (robot) ->
       
       reportActivesSuccess = () ->
          robot.messageRoom room, "#{active}: \"Did I fall asleep?\". Hubot: Yes, just while #{imprint} was installing."
-
-      reportActivesSuccess() if reported.status is "success" else explainActivesProblem()
+      
+      if reported.status is "success" then reportActivesSuccess()  
+      else explainActivesProblem()
 
       res.writeHead 200, "OK"
       res.end()
