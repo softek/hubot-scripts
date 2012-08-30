@@ -1,10 +1,10 @@
 room = process.env.HUBOT_CI_ROOM
-spawn = require('child_process').spawn
+spawn = require("child_process").spawn
 
 ci = (robot) ->
 
    wipe = (active) ->
-      spawn 'vmware-revert', ['192.168.10.1', 'root', '', "illum-qa-#{active.toLowerCase()}"] 
+      spawn "vmware-revert", ["192.168.10.1", "root", "", "illum-qa-#{active.toLowerCase()}"] 
 
    getImprint = (active) ->
       getImprints()[active.toLowerCase()]
@@ -41,7 +41,7 @@ ci = (robot) ->
       active = msg.match[1]
       
       unless active
-         msg.send 'What Active did you mean?' 
+         msg.send "What Active did you mean?" 
          return
       
       imprint = getImprint active
@@ -52,27 +52,39 @@ ci = (robot) ->
       else
          msg.send "Sorry, #{active} is blank. Give #{active} an imprint with the command: imprint #{active} with <<IMPRINT>>"
 
-   robot.router.get '/next-engagement/{active}', (req, res) ->
+   robot.router.get "/next-engagement/{active}", (req, res) ->
       active = req.params.active  
       imprint = getImprint active
 
       if imprint
-         res.writeHead 200, 'OK'
+         res.writeHead 200, "OK"
          res.write robot.brain.imprints[active.toLowerCase()]
       else
-         res.writeHead 404, 'Not Found'
-         res.write 'You are not scheduled for an engagement.'
+         res.writeHead 404, "Not Found"
+         res.write "You are not scheduled for an engagement."
          robot.messageRoom "Hey! #{active} is looking for their next imprint but I didn't know what to do."
 
       res.end()
 
-   robot.router.post '/engagement-complete', (req, res) ->
-      active = req.body.active
-      imprint = req.body.imprint
+   robot.router.post "/engagement-complete", (req, res) ->
+      reported = req.body or { active: 'Unknown', imprint: 'Unknown' }
+      active = reported.active
+      imprint = reported.imprint
+      
+      explanationFor =
+         checkin: "#{active} had trouble checking in to get their imprint. They reported the following: \"#{reported.error}\""
+         download: "#{active} had trouble downloading their imprint. The active said, \"#{reported.error}\""
+         imprint: "#{active}'s imprint failed to install. It exited with error: \"#{reported.error}\""
+      
+      explainActivesProblem = () ->
+         robot.messageRoom room, explanationFor[reported.state] or "Unknown error from #{active}."
+      
+      reportActivesSuccess = () ->
+         robot.messageRoom room, "#{active}: \"Did I fall asleep?\". Hubot: Yes, just while #{imprint} was installing."
 
-      robot.messageRoom room, "#{active}: \"Did I fall asleep?\""
-      robot.messageRoom room, 'Yes #{active}, just while #{imprint} was uploading.'
-      res.writeHead 200, 'OK'
+      reportActivesSuccess() if reported.status is "success" else explainActivesProblem()
+
+      res.writeHead 200, "OK"
       res.end()
 
 module.exports = ci
