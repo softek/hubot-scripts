@@ -3,7 +3,7 @@ spawn = require("child_process").spawn
 ci = (robot) ->
    room = process.env.HUBOT_CI_ROOM
    host = process.env.HUBOT_CI_HOST
-   user = process.env.HUBOT_CI_HOST_USER
+   user = process.env.HUBOT_CI_HOST_USERNAME
    password = process.env.HUBOT_CI_HOST_PASSWORD
 
    wipe = (active) ->
