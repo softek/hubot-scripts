@@ -1,16 +1,19 @@
-room = process.env.HUBOT_CI_ROOM
 spawn = require("child_process").spawn
 
 ci = (robot) ->
+   room = process.env.HUBOT_CI_ROOM
+   host = process.env.HUBOT_CI_VM_HOST
+   user = process.env.HUBOT_CI_HOST_USERNAME
+   password = process.env.HUBOT_CI_HOST_PASSWORD
 
    wipe = (active) ->
-      spawn "vmware-revert", ["192.168.10.1", "root", "", "illum-qa-#{active.toLowerCase()}"] 
+      spawn "vmware-revert", [host, user, password, "illum-qa-#{active.toLowerCase().trim()}"] 
 
    getImprint = (active) ->
-      getImprints()[active.toLowerCase()]
+      getImprints()[active.toLowerCase().trim()]
    
    setImprint = (active, imprint) ->
-      getImprints()[active.toLowerCase()] = imprint
+      getImprints()[active.toLowerCase().trim()] = imprint
    
    getImprints = () ->
       robot.brain.imprints ||= {}
@@ -52,7 +55,7 @@ ci = (robot) ->
       else
          msg.send "Sorry, #{active} is blank. Give #{active} an imprint with the command: imprint #{active} with <<IMPRINT>>"
 
-   robot.router.get "/next-engagement/{active}", (req, res) ->
+   robot.router.get "/next-engagement/:active", (req, res) ->
       active = req.params.active  
       imprint = getImprint active
 
