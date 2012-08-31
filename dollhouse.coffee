@@ -8,14 +8,14 @@ ci = (robot) ->
 
    wipe = (active, callback) ->
       revert = spawn "vmware-revert", [host, user, password, "illum-qa-#{active.toLowerCase().trim()}"] 
-      revert.on 'exit', (code) ->
+      revert.on "exit", (code) ->
          callback if code is 0 then code else null 
 
    getImprint = (active) ->
       getImprints()[active.toLowerCase().trim()]
    
-   setImprint = (active, imprint) ->
-      getImprints()[active.toLowerCase().trim()] = imprint
+   setImprint = (active, memory, parameters) ->
+      getImprints()[active.toLowerCase().trim()] = memory: memory, parameters: parameters
    
    getImprints = () ->
       robot.brain.data.imprints ||= {}
@@ -25,22 +25,13 @@ ci = (robot) ->
    
    robot.respond /list (actives|imprints)/i, (msg) ->
       if hasImprints()
-         msg.send "#{active}: #{imprint}" for active, imprint of getImprints()
+         msg.send "#{active}: #{imprint.memory}" + ("using #{imprint.parameters}" if imprint.parameters) for active, imprint of getImprints()
       else
          msg.send "There are no actives."
 
-   robot.respond /what(?: is|\'s|s) (\w+)'?s imprint[?]?/i, (msg) ->
+   robot.respond /imprint (.*) with ([^ ]*)(?: using (.*))?/i, (msg) ->
       active = msg.match[1]
-      imprint = getImprint active
-
-      if imprint
-         msg.send "#{active} is imprinted with #{imprint}"
-      else
-         msg.send "There's no record of an active by the name of #{active}."
-
-   robot.respond /imprint (.*) with (.*)/i, (msg) ->
-      active = msg.match[1]
-      setImprint active, msg.match[2]    
+      setImprint active, msg.match[2], msg.match[3]    
 
    robot.respond /wipe (.*)/i, (msg) ->
       active = msg.match[1]
@@ -52,7 +43,7 @@ ci = (robot) ->
       imprint = getImprint active
 
       if imprint
-         msg.send "Wiping #{active} and imprinting #{imprint}."
+         msg.send "Wiping #{active} and imprinting #{imprint.memory}."
          wipe active (err) ->
             if err
                msg.send "Oops! I had trouble starting the wipe for #{active}!"
@@ -67,7 +58,7 @@ ci = (robot) ->
 
       if imprint
          res.writeHead 200, "OK"
-         res.write imprint
+         res.write JSON.stringify(imprint)
          robot.messageRoom room, "#{active} checked in."
       else
          res.writeHead 404, "Not Found"
