@@ -25,7 +25,7 @@ ci = (robot) ->
    
    robot.respond /list (actives|imprints)/i, (msg) ->
       if hasImprints()
-         msg.send "#{active}: #{imprint.memory}" + ("using #{imprint.parameters}" if imprint.parameters) for active, imprint of getImprints()
+         msg.send "#{active}: \"#{imprint.memory}\"" + (" using \"#{imprint.parameters}\"" if imprint.parameters) for active, imprint of getImprints()
       else
          msg.send "There are no actives."
 
@@ -44,7 +44,7 @@ ci = (robot) ->
 
       if imprint
          msg.send "Wiping #{active} and imprinting #{imprint.memory}."
-         wipe active (err) ->
+         wipe active, (err) ->
             if err
                msg.send "Oops! I had trouble starting the wipe for #{active}!"
             else
