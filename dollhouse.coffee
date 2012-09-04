@@ -1,5 +1,4 @@
 spawn = require("child_process").spawn
-fs = require('fs')
 
 ci = (robot) ->
    host = process.env.HUBOT_CI_HOST
@@ -7,10 +6,8 @@ ci = (robot) ->
    password = process.env.HUBOT_CI_HOST_PASSWORD
 
    writeLog = (message) ->
-      var dateAndTime = Date().toUTCString();
-      stream = fs.createWriteStream logPath, flags: 'a+', encoding: 'utf8', mode: 0644
-      stream.write "#{dateAndTime}: #{message}" 
-      stream.end()
+      dateAndTime = (new Date()).toUTCString()
+      console.log "#{dateAndTime}: #{message}" 
 
    wipe = (active, callback) ->
       revert = spawn "vmware-revert", [host, user, password, "illum-qa-#{active.toLowerCase().trim()}"] 
