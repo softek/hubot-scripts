@@ -45,10 +45,7 @@ ci = (robot) ->
       if imprint
          msg.send "Wiping #{active} and imprinting #{imprint.memory}."
          wipe active, (err) ->
-            if err
-               msg.send "Oops! I had trouble starting the wipe for #{active}!"
-            else
-               msg.send "Wipe operation in progress."
+            msg.send "Oops! I had trouble starting the wipe for #{active}!" if err
       else
          msg.send "Sorry, #{active} is blank. Give #{active} an imprint with the command: imprint #{active} with <<IMPRINT>>"
 
