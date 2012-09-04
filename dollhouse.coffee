@@ -17,8 +17,8 @@ ci = (robot) ->
    getImprint = (active) ->
       getImprints()[active.toLowerCase().trim()]
    
-   setImprint = (active, memory, parameters) ->
-      getImprints()[active.toLowerCase().trim()] = memory: memory, parameters: parameters
+   setImprint = (active, imprint) ->
+      getImprints()[active.toLowerCase().trim()] = imprint
    
    getImprints = () ->
       robot.brain.data.imprints ||= {}
@@ -29,14 +29,13 @@ ci = (robot) ->
    robot.respond /list (actives|imprints)/i, (msg) ->
       if hasImprints()
          for active, imprint of getImprints()
-            imprintParameters = if imprint.parameters then " using \" #{imprint.parameters}\"" else ""
-            msg.send "#{active}: \"#{imprint.memory}\"#{imprintParameters}" 
+            msg.send "#{active}: \"#{imprint}\"#{imprintParameters}" 
       else
          msg.send "There are no actives."
 
-   robot.respond /imprint (.*) with ([^ ]*)(?: using (.*))?/i, (msg) ->
+   robot.respond /imprint (.*) with ([^ ]*)/i, (msg) ->
       active = msg.match[1]
-      setImprint active, msg.match[2], msg.match[3]    
+      setImprint active, msg.match[2]    
 
    robot.respond /wipe (.*)/i, (msg) ->
       active = msg.match[1]
@@ -48,7 +47,7 @@ ci = (robot) ->
       imprint = getImprint active
 
       if imprint
-         msg.send "Wiping #{active} and imprinting #{imprint.memory}."
+         msg.send "Wiping #{active} and imprinting #{imprint}."
          wipe active, (err) ->
             writeLog "Oops! I had trouble starting the wipe for #{active}!" if err
       else
@@ -60,7 +59,7 @@ ci = (robot) ->
 
       if imprint
          res.writeHead 200, "OK"
-         res.write JSON.stringify(imprint)
+         res.write imprint
          writeLog "#{active} checked in."
       else
          res.writeHead 404, "Not Found"
