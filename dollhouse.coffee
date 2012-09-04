@@ -1,10 +1,16 @@
 spawn = require("child_process").spawn
+fs = require('fs')
 
 ci = (robot) ->
-   room = process.env.HUBOT_CI_ROOM
    host = process.env.HUBOT_CI_HOST
    user = process.env.HUBOT_CI_HOST_USERNAME
    password = process.env.HUBOT_CI_HOST_PASSWORD
+
+   writeLog = (message) ->
+      var dateAndTime = Date().toUTCString();
+      stream = fs.createWriteStream logPath, flags: 'a+', encoding: 'utf8', mode: 0644
+      stream.write "#{dateAndTime}: #{message}" 
+      stream.end()
 
    wipe = (active, callback) ->
       revert = spawn "vmware-revert", [host, user, password, "illum-qa-#{active.toLowerCase().trim()}"] 
@@ -45,7 +51,7 @@ ci = (robot) ->
       if imprint
          msg.send "Wiping #{active} and imprinting #{imprint.memory}."
          wipe active, (err) ->
-            msg.send "Oops! I had trouble starting the wipe for #{active}!" if err
+            writeLog "Oops! I had trouble starting the wipe for #{active}!" if err
       else
          msg.send "Sorry, #{active} is blank. Give #{active} an imprint with the command: imprint #{active} with <<IMPRINT>>"
 
@@ -56,11 +62,11 @@ ci = (robot) ->
       if imprint
          res.writeHead 200, "OK"
          res.write JSON.stringify(imprint)
-         robot.messageRoom room, "#{active} checked in."
+         writeLog "#{active} checked in."
       else
          res.writeHead 404, "Not Found"
          res.write "You are not scheduled for an engagement."
-         robot.messageRoom room, "Hey! #{active} is looking for their next imprint but I didn't know what to do."
+         writeLog "Hey! #{active} is looking for their next imprint but I didn't know what to do."
 
       res.end()
 
@@ -75,10 +81,10 @@ ci = (robot) ->
          imprint: "#{active}'s imprint failed to install. It exited with error: \"#{reported.error}\""
       
       explainActivesProblem = () ->
-         robot.messageRoom room, explanationFor[reported.state] or "Unknown error from #{active}."
+         writeLog explanationFor[reported.state] or "Unknown error from #{active}."
       
       reportActivesSuccess = () ->
-         robot.messageRoom room, "#{active}: \"Did I fall asleep?\". Hubot: Yes, just while #{imprint} was installing."
+         writeLog "#{active}: \"Did I fall asleep?\". Hubot: Yes, just while #{imprint} was installing."
       
       if reported.status is "success" then reportActivesSuccess()  
       else explainActivesProblem()
