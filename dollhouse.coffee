@@ -29,7 +29,7 @@ ci = (robot) ->
    robot.respond /list (actives|imprints)/i, (msg) ->
       if hasImprints()
          for active, imprint of getImprints()
-            msg.send "#{active}: \"#{imprint}\"#{imprintParameters}" 
+            msg.send "#{active}: \"#{imprint}\"" 
       else
          msg.send "There are no actives."
 
