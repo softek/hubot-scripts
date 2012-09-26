@@ -26,15 +26,17 @@ ci = (robot) ->
    hasImprints = () ->
       Object.keys(getImprints()).length > 0
    
+   getLocks = () ->
+      robot.brain.data.imprint_locks ||= {}
+
    removeLock = (active) ->
-      delete robot.brain.data.imprint_locks[active.toLowerCase().trim()]
+      delete getLocks()[active.toLowerCase().trim()]
    
    getLock = (active) ->
-      robot.brain.data.imprint_locks[active.toLowerCase().trim()]
+      getLocks()[active.toLowerCase().trim()]
    
    setLock = (active, owner, reason) ->
-      robot.brain.data.imprint_locks ||= {}
-      robot.brain.data.imprint_locks[active.toLowerCase().trim()] = 
+      getLocks()[active.toLowerCase().trim()] = 
          owner: owner
          reason: reason
          date: new Date()
