@@ -26,17 +26,36 @@ ci = (robot) ->
    hasImprints = () ->
       Object.keys(getImprints()).length > 0
    
+   removeLock = (active) ->
+      delete robot.brain.data.imprint_locks[active.toLowerCase().trim()]
+   
+   getLock = (active) ->
+      robot.brain.data.imprint_locks[active.toLowerCase().trim()]
+   
+   setLock = (active, owner, reason) ->
+      robot.brain.data.imprint_locks ||= {}
+      robot.brain.data.imprint_locks[active.toLowerCase().trim()] = 
+         owner: owner
+         reason: reason
+         date: new Date()
+   
    robot.respond /list (actives|imprints)/i, (msg) ->
       if hasImprints()
          for active, imprint of getImprints()
             msg.send "#{active}: \"#{imprint}\"" 
       else
          msg.send "There are no actives."
+   
+   robot.respond /release lock on (.*)/, (msg) ->
+      removeLock msg.match[1]
+      
+   robot.respond /lock down ([^ ]*) (.*)/, (msg) ->
+      setLock msg.match[1], msg.match[2]
 
    robot.respond /imprint (.*) with ([^ ]*)/i, (msg) ->
       active = msg.match[1]
       setImprint active, msg.match[2]    
-
+   
    robot.respond /wipe (.*)/i, (msg) ->
       active = msg.match[1]
       
@@ -45,8 +64,11 @@ ci = (robot) ->
          return
       
       imprint = getImprint active
+      lock = getLock active
 
-      if imprint
+      if imprint and lock 
+         msg.send "Sorry #{active} cannot be imprinted. \"#{lock.reason}\" by #{lock.owner} on #{lock.date}"
+      else if imprint
          msg.send "Wiping #{active} and imprinting #{imprint}."
          wipe active, (err) ->
             writeLog "Oops! I had trouble starting the wipe for #{active}!" if err
