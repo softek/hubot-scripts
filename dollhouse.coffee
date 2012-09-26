@@ -31,7 +31,7 @@ ci = (robot) ->
 
    removeLock = (active) ->
       delete getLocks()[active.toLowerCase().trim()]
-   
+
    getLock = (active) ->
       getLocks()[active.toLowerCase().trim()]
    
@@ -39,7 +39,7 @@ ci = (robot) ->
       getLocks()[active.toLowerCase().trim()] = 
          owner: owner
          reason: reason
-         date: new Date()
+         date: new Date().toString()
    
    robot.respond /list (actives|imprints)/i, (msg) ->
       if hasImprints()
@@ -51,7 +51,9 @@ ci = (robot) ->
    robot.respond /release lock on (.*)/, (msg) ->
       removeLock msg.match[1]
       
-   robot.respond /lock down ([^ ]*) (.*)/, (msg) ->
+   robot.respond /lock down ([^ ]*)(.*)/i, (msg) ->
+      msg.send "Locking down #{msg.match[1]} just for you #{msg.message.user.name}"
+      reason = if msg.match.length is 3 then msg.match[2].trim() else "No Reason Given"
       setLock msg.match[1], msg.message.user.name, msg.match[2]
 
    robot.respond /imprint (.*) with ([^ ]*)/i, (msg) ->
