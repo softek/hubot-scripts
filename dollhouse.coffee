@@ -48,10 +48,10 @@ ci = (robot) ->
       else
          msg.send "There are no actives."
    
-   robot.respond /release lock on (.*)/, (msg) ->
+   robot.respond /unlock (.*)/i, (msg) ->
       removeLock msg.match[1]
       
-   robot.respond /lock down ([^ ]*)(.*)/i, (msg) ->
+   robot.respond /lock ([^ ]*)(.*)/i, (msg) ->
       msg.send "Locking down #{msg.match[1]} just for you #{msg.message.user.name}"
       reason = if msg.match.length is 3 then msg.match[2].trim() else "No Reason Given"
       setLock msg.match[1], msg.message.user.name, msg.match[2]
