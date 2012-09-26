@@ -50,12 +50,12 @@ ci = (robot) ->
       removeLock msg.match[1]
       
    robot.respond /lock down ([^ ]*) (.*)/, (msg) ->
-      setLock msg.match[1], msg.match[2]
+      setLock msg.match[1], msg.message.user.name, msg.match[2]
 
    robot.respond /imprint (.*) with ([^ ]*)/i, (msg) ->
       active = msg.match[1]
       setImprint active, msg.match[2]    
-   
+
    robot.respond /wipe (.*)/i, (msg) ->
       active = msg.match[1]
       
