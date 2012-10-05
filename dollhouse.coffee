@@ -4,6 +4,7 @@ ci = (robot) ->
    host = process.env.HUBOT_CI_HOST
    user = process.env.HUBOT_CI_HOST_USERNAME
    password = process.env.HUBOT_CI_HOST_PASSWORD
+   room = process.env.HUBOT_CI_ROOM
 
    writeLog = (message) ->
       dateAndTime = (new Date()).toUTCString()
@@ -105,10 +106,10 @@ ci = (robot) ->
          imprint: "#{active}'s imprint failed to install. It exited with error: \"#{reported.error}\""
       
       explainActivesProblem = () ->
-         writeLog explanationFor[reported.state] or "Unknown error from #{active}."
+         robot.messageRoom room, explanationFor[reported.state] or "Unknown error from #{active}."
       
       reportActivesSuccess = () ->
-         writeLog "#{active}: \"Did I fall asleep?\". Hubot: Yes, just while #{imprint} was installing."
+         robot.messageRoom room, "#{active}: \"Did I fall asleep?\". Hubot: Yes, just while #{imprint} was installing."
       
       if reported.status is "success" then reportActivesSuccess()  
       else explainActivesProblem()
