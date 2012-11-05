@@ -11,9 +11,14 @@ ci = (robot) ->
       console.log "#{dateAndTime}: #{message}" 
 
    wipe = (active, callback) ->
+      robot.messageRoom room, "Wiping #{active}."
       revert = spawn "vmware-revert", [host, user, password, "illum-qa-#{active.toLowerCase().trim()}"] 
       revert.on "exit", (code) ->
-         callback if code is 0 then code else null 
+         if code is 0
+            robot.messageRoom room, "Oops! I had trouble starting the wipe for #{active}!" if err
+            callback code
+         else
+            callback null
 
    getImprint = (active) ->
       getImprints()[active.toLowerCase().trim()]
@@ -53,13 +58,21 @@ ci = (robot) ->
       removeLock msg.match[1]
       
    robot.respond /lock ([^ ]*)(.*)/i, (msg) ->
-      msg.send "Locking down #{msg.match[1]} just for you #{msg.message.user.name}"
+      msg.send "Locking down #{msg.match[1]}"
       reason = if msg.match.length is 3 then msg.match[2].trim() else "No Reason Given"
       setLock msg.match[1], msg.message.user.name, msg.match[2]
 
    robot.respond /imprint (.*) with ([^ ]*)/i, (msg) ->
       active = msg.match[1]
       setImprint active, msg.match[2]    
+   
+   robot.respond /(stop|cancel)(.*)(wipe|wiping)/i, (msg) ->
+      if @wipeTimeout
+         clearTimeout @wipeTimeout
+         @wipeTimeout = null
+         msg.send "Wipe stopped!"
+      else
+         msg.send "Sorry, I couldn't stop the wipe!"
 
    robot.respond /wipe (.*)/i, (msg) ->
       active = msg.match[1]
@@ -74,9 +87,13 @@ ci = (robot) ->
       if imprint and lock 
          msg.send "Sorry #{active} cannot be imprinted. \"#{lock.reason}\" by #{lock.owner} on #{lock.date}"
       else if imprint
-         msg.send "Wiping #{active} and imprinting #{imprint}."
-         wipe active, (err) ->
-            writeLog "Oops! I had trouble starting the wipe for #{active}!" if err
+         msg.send "Wiping #{active} and imprinting #{imprint} in 10 seconds."
+
+         @wipeTimeout = setTimeout(() -> 
+            if @wipeTimeout
+               @wipeTimeout = null
+               wipe active
+         , 10000)
       else
          msg.send "Sorry, #{active} is blank. Give #{active} an imprint with the command: imprint #{active} with <<IMPRINT>>"
 
