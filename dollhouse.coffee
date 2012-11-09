@@ -89,7 +89,7 @@ ci = (robot) ->
       else if imprint
          msg.send "Wiping #{active} and imprinting #{imprint} in 10 seconds."
 
-         @wipeTimeout = setTimeout(() -> 
+         @wipeTimeout = setTimeout(() => 
             if @wipeTimeout
                @wipeTimeout = null
                wipe active
