@@ -91,8 +91,10 @@ ci = (robot) ->
 
          @wipeTimeout = setTimeout(() => 
             if @wipeTimeout
+               clearTimeout @wipeTimeout
                @wipeTimeout = null
-               wipe active
+               wipe active, (err) ->
+                  writeLog "Oops! I had trouble starting the wipe for #{active}!" if err
          , 10000)
       else
          msg.send "Sorry, #{active} is blank. Give #{active} an imprint with the command: imprint #{active} with <<IMPRINT>>"
