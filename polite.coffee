@@ -1,8 +1,16 @@
-# Polite.
+# Description:
+#   Polite.
 #
-# Say thanks to your robot.
-
-util = require 'util'
+# Dependencies:
+#   None
+#
+# Configuration:
+#   None
+#
+# Commands:
+#
+# Author:
+#   dannymcc
 
 responses = [
   "You're welcome.",
@@ -15,7 +23,7 @@ responses = [
 ]
 
 shortResponses = [
-  'yw',
+  'vw',
   'np',
 ]
 
@@ -28,20 +36,21 @@ farewellResponses = [
   'See you later'
 ]
 
-isTalkingToMe = (msg, robot) ->
+# http://en.wikipedia.org/wiki/You_talkin'_to_me%3F
+youTalkinToMe = (msg, robot) ->
   input = msg.message.text.toLowerCase()
   name = robot.name.toLowerCase()
   input.indexOf(name) != -1
 
 module.exports = (robot) ->
-  robot.hear /(thanks|thank you|cheers|nice one)/i, (msg) ->
-    msg.reply msg.random responses if isTalkingToMe(msg, robot)
+  robot.hear /\b(thanks|thank you|cheers|nice one)\b/i, (msg) ->
+    msg.reply msg.random responses if youTalkinToMe(msg, robot)
 
-  robot.hear /(ty|thx)/i, (msg) ->
-    msg.reply msg.random shortResponses if isTalkingToMe(msg, robot)
+  robot.hear /\b(ty|thx)\b/i, (msg) ->
+    msg.reply msg.random shortResponses if youTalkinToMe(msg, robot)
 
-  robot.hear /(hello|hi|sup|howdy|good (morning|evening|afternoon))/i, (msg) ->
-    msg.reply "#{robot.name} at your service!" if isTalkingToMe(msg, robot)
+  robot.hear /\b(hello|hi|sup|howdy|good (morning|evening|afternoon))\b/i, (msg) ->
+    msg.reply "#{robot.name} at your service!" if youTalkinToMe(msg, robot)
     
-  robot.hear /(bye|night|goodbye|good night)/i, (msg) ->
-    msg.reply msg.random farewellResponses if isTalkingToMe(msg, robot)
+  robot.hear /\b(bye|night|goodbye|good night)\b/i, (msg) ->
+    msg.reply msg.random farewellResponses if youTalkinToMe(msg, robot)
