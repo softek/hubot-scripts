@@ -13,12 +13,7 @@ ci = (robot) ->
    wipe = (active, callback) ->
       robot.messageRoom room, "Wiping #{active}."
       revert = spawn "vmware-revert", [host, user, password, "illum-qa-#{active.toLowerCase().trim()}"] 
-      revert.on "exit", (code) ->
-         if code is 0
-            robot.messageRoom room, "Oops! I had trouble starting the wipe for #{active}!" if err
-            callback code
-         else
-            callback null
+      revert.on "exit", callback
 
    getImprint = (active) ->
       getImprints()[active.toLowerCase().trim()]
