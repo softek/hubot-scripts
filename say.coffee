@@ -1,4 +1,6 @@
-# Echos whatever is sent to the endpoint into a room
+# Description: 
+#   Echos whatever is sent to the endpoint into a room
+
 module.exports = (robot) ->
 
   robot.router.post '/hubot/say', (req, res) ->

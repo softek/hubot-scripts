@@ -1,9 +1,8 @@
-# Generates a suggestion for where to go to lunch.
-#
-# These commands are grabbed from comment blocks at the top of each file.
-#
-# help - Displays all of the help commands that Hubot knows about.
-# help <query> - Displays all help commands that match <query>.
+# Description: 
+#   Tells information about the time of day
+# 
+# Commands:
+#   hubot tell time - responds with what time block we're in
 
 module.exports = (robot) ->
   robot.respond /tell time/i, (msg) ->

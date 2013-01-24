@@ -1,3 +1,20 @@
+# Description:
+#   Interacts with our actives (vms) through esxi
+# 
+# Configuration: 
+#   HUBOT_CI_HOST - The hostname of the CI server (esxi)
+#   HUBOT_CI_HOST_USERNAME - Username to use with authenting
+#   HUBOT_CI_HOST_PASSWORD - The password to use
+#   HUBOT_CI_ROOM - Room to announce to when reverting VMs
+#   
+# Commands:
+#   hubot list (actives|imprints) - displays the mappings between VM and MSI image
+#   hubot unlock <vm> - Unlocks a VM by name
+#   hubot lock <vm> <reason> - Locks a VM from being wiped via Hubot
+#   hubot imprint <vm> with <image> - Maps a VM by name to MSI image location
+#   hubot (stop|cancel) (wipe|wiping) - Stop an impending revert operation
+#   hubot wipe <vm> - Revert the given VM to the latest snapshot
+
 spawn = require("child_process").spawn
 
 ci = (robot) ->

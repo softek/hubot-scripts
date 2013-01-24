@@ -1,9 +1,8 @@
-# Generates a suggestion for where to go to lunch.
-#
-# These commands are grabbed from comment blocks at the top of each file.
-#
-# help - Displays all of the help commands that Hubot knows about.
-# help <query> - Displays all help commands that match <query>.
+# Description:
+#   Generates a suggestion for where to go to lunch.
+# 
+# Commands: 
+#   hubot what's for lunch? - Tells you what's for lunch.
 
 module.exports = (robot) ->
   robot.respond /what'?s for lunch\??\s*(.*)?$/i, (msg) ->

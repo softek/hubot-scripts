@@ -1,3 +1,8 @@
+# Description:
+#   Posts status updates when jenkins builds finish
+# 
+# Configuration: 
+#   HUBOT_JENKINS_ROOM - The room to announce builds in
 
 room = process.env.HUBOT_JENKINS_ROOM
 

@@ -1,9 +1,9 @@
-# Generates a suggestion for where to go to lunch.
+# Description:
+#   Responds if the robot is(nt) dead
 #
-# These commands are grabbed from comment blocks at the top of each file.
-#
-# help - Displays all of the help commands that Hubot knows about.
-# help <query> - Displays all help commands that match <query>.
+# Commands:
+#   hubot are you (dead|alive)? - responds if hubot is alive
+#   hubot open the pod bay doors - opens the pod bay doors, of course.
 
 module.exports = (robot) ->
   robot.respond /are you (dead|alive)\??\s*(.*)?$/i, (msg) ->
