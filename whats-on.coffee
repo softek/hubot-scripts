@@ -17,7 +17,7 @@ module.exports = (robot) ->
         matches = data.match(/<item>\n\W+<title>([^<]+)<\/title>/i)
         song = matches[1]
 
-        msg.send decodeURIComponent(song)
+        msg.send song.replace(/&amp;/ig, "&")
       )
       res.on("error", () ->
         msg.send "I'm not sure..."
