@@ -9,17 +9,18 @@ http = require "http"
 
 module.exports = (robot) ->
   robot.respond /what'?s? (on|playing|song (is|was) (this|that)|are we listening to)\??/i, (msg) ->
+    http.get("http://ws.audioscrobbler.com/1.0/user/dustyburwell/recenttracks.rss", (res) ->
+      data = ""
+      res.on("data", (chunk) -> data += chunk.toString())
+      res.on("end", () ->
+        matches = data.match(/<item>\n\W+<title>([^<]+)<\/title>/i)
+        song = matches[1]
 
-  http.get("http://ws.audioscrobbler.com/1.0/user/dustyburwell/recenttracks.rss", (res) ->
-    data = ""
-    res.on("data", (chunk) -> data += chunk.toString())
-    res.on("end", () ->
-      matches = data.match(/<item>\n\W+<title>([^<]+)<\/title>/i)
-      song = matches[1]
-
-      msg.send song
-    )
-    res.on("error", () ->
+        msg.send song
+      )
+      res.on("error", () ->
+        msg.send "I'm not sure..."
+      )
+    ).on("error", () ->
       msg.send "I'm not sure..."
     )
-  )
