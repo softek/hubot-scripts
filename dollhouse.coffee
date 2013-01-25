@@ -3,7 +3,7 @@
 # 
 # Configuration: 
 #   HUBOT_CI_HOST - The hostname of the CI server (esxi)
-#   HUBOT_CI_HOST_USERNAME - Username to use with authenting
+#   HUBOT_CI_HOST_USERNAME - Username to use with authentication
 #   HUBOT_CI_HOST_PASSWORD - The password to use
 #   HUBOT_CI_ROOM - Room to announce to when reverting VMs
 #   
@@ -12,7 +12,7 @@
 #   hubot unlock <vm> - Unlocks a VM by name
 #   hubot lock <vm> <reason> - Locks a VM from being wiped via Hubot
 #   hubot imprint <vm> with <image> - Maps a VM by name to MSI image location
-#   hubot (stop|cancel) (wipe|wiping) - Stop an impending revert operation
+#   hubot (stop|cancel) - Stop an impending revert operation
 #   hubot wipe <vm> - Revert the given VM to the latest snapshot
 
 spawn = require("child_process").spawn
@@ -70,15 +70,16 @@ ci = (robot) ->
       removeLock msg.match[1]
       
    robot.respond /lock ([^ ]*)(.*)/i, (msg) ->
-      msg.send "Locking down #{msg.match[1]}"
-      reason = if msg.match.length is 3 then msg.match[2].trim() else "No Reason Given"
-      setLock msg.match[1], msg.message.user.name, msg.match[2]
+      imrpint = msg.match[1]
+      msg.send "Locking #{imprint}. \"unlock #{imprint}\" to clear this lock."
+      reason = if msg.match.length is 3 then msg.match[2].trim() else "No reason given."
+      setLock imprint, msg.message.user.name, msg.match[2]
 
    robot.respond /imprint (.*) with ([^ ]*)/i, (msg) ->
       active = msg.match[1]
       setImprint active, msg.match[2]    
    
-   robot.respond /(stop|cancel)(.*)(wipe|wiping)/i, (msg) ->
+   robot.respond /(stop|cancel|wait)/i, (msg) ->
       if @wipeTimeout
          clearTimeout @wipeTimeout
          @wipeTimeout = null
@@ -90,16 +91,18 @@ ci = (robot) ->
       active = msg.match[1]
       
       unless active
-         msg.send "What Active did you mean?" 
+         msg.send "Which Active did you mean?" 
          return
       
       imprint = getImprint active
       lock = getLock active
 
-      if imprint and lock 
-         msg.send "Sorry #{active} cannot be imprinted. \"#{lock.reason}\" by #{lock.owner} on #{lock.date}"
+      if lock 
+         msg.send "#{active} has been locked [#{lock.reason}] by #{lock.owner} on #{lock.date}"
       else if imprint
-         msg.send "Wiping #{active} and imprinting #{imprint} in 10 seconds."
+         msg.send "Wiping #{active} and imprinting #{imprint} in 10 seconds. Stop, cancel, or wait to prevent this from happening."
+      else
+         msg.send "Wiping #{active} in 10 seconds. Stop, cancel, or wait to prevent this from happening."
 
          @wipeTimeout = setTimeout(() => 
             if @wipeTimeout
@@ -108,8 +111,6 @@ ci = (robot) ->
                wipe active, (err) ->
                   writeLog "Oops! I had trouble starting the wipe for #{active}!" if err
          , 10000)
-      else
-         msg.send "Sorry, #{active} is blank. Give #{active} an imprint with the command: imprint #{active} with <<IMPRINT>>"
 
    robot.router.get "/next-engagement/:active", (req, res) ->
       active = req.params.active  
