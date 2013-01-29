@@ -8,8 +8,32 @@
 http = require "http"
 url = require "url"
 
+# Regex test cases:
+#   what's playing?
+#   what's playing
+#   whats playing?
+#   whats playing
+#   what's playin?
+#   what's playin
+#   whats playin?
+#   whats playin
+#   what's on?
+#   what's on
+#   whats on?
+#   whats on
+#   what song was that?
+#   what song was that
+#   what song is this?
+#   what song is this
+#   what are we listening to?
+#   what are we listening to
+#   what song are we listening to?
+#   what song are we listening to
+#   music me
+#   song me
+
 module.exports = (robot) ->
-  robot.respond /what'?s? (on|playing|song (is|was) (this|that)|are we listening to)\??/i, (msg) ->
+  robot.respond /(what'?s? (on|playing?|song (is|was) (this|that)|(song )?are we listening to)\??|song me|music me)/i, (msg) ->
     http.get(url.parse("http://ws.audioscrobbler.com/1.0/user/dustyburwell/recenttracks.rss"), (res) ->
       data = ""
       res.on("data", (chunk) -> data += chunk.toString())
