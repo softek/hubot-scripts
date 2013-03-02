@@ -11,17 +11,25 @@ host = 'youtrack'
 username = process.env.HUBOT_YOUTRACK_USERNAME
 password = process.env.HUBOT_YOUTRACK_PASSWORD
 
+# http://en.wikipedia.org/wiki/You_talkin'_to_me%3F
+youTalkinToMe = (msg, robot) ->
+  input = msg.message.text.toLowerCase()
+  name = robot.name.toLowerCase()
+  input.indexOf(name) != -1
+
 module.exports = (robot) ->
 
   robot.hear /what (are )?my issues/i, (msg) ->
     msg.send "@#{msg.message.user.name}, you have many issues.  Shall I enumerate them?  I think not."   if Math.random() < .2
 
   robot.hear /what ((are )?my issues|am I (doing|working on|assigned))/i, (msg) ->
+    return unless youTalkinToMe msg, robot
     filter = "for:+#{getUserNameFromMessage(msg)}+state:-Resolved,%20-Completed,%20-Blocked%20,%20-{To%20be%20discussed}"
     askYoutrack "/rest/issue?filter=#{filter}&with=summary&with=state", (err, issues) -> 
       handleIssues err, issues, msg
 
   robot.hear /what (can|might|should)\s+(I|we)\s+(do|work on)/i, (msg) ->
+    return unless youTalkinToMe msg, robot
     filter = "state:-Resolved,%20-Completed,%20-Blocked%20,%20-{To%20be%20discussed}"
     askYoutrack "/rest/issue?filter=#{filter}&with=summary&with=state&max=25", (err, issues) -> 
       handleIssues err, issues, msg
