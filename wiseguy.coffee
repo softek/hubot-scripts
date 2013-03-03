@@ -26,11 +26,17 @@ module.exports = (robot) ->
         fl = firstDotLast.split('.')
         first = fl[0]
         last = fl[1]
-        "?exclude=explicit&firstName=#{first}&lastName=#{last}"
+        "&firstName=#{first}&lastName=#{last}"
       else
         ''
+    
+    reformat = (text) ->
+      norris = /\b(blood|death|pain|round-?house|kick(ing|ed|s|)|grinds|rage|die|brutal|lethal|weapon|kill|bullet|eat|gun|ate|fecal)\b/i
+      skeet = /\b(?:class|factory|pattern|instantiate|interfaces|reflection|stand-up|pi|iTunes|installing|Quicktime|machine|infinite|loop|DDOS|GUI|programming|languages|keyboard|type-cast|Compiler|protocol|code|Turing|dereference|NULL|sudo|equality)/i
+      text = text.replace(/chuck/ig, 'Jon').replace(/Norris/ig, 'Skeet') + '\r\nOr was that Chuck Norris?' if skeet.test text unless norris.test text
+      text
 
-    http.get "http://api.icndb.com/jokes/random" + query, (res) ->
+    http.get "http://api.icndb.com/jokes/random?exclude=explicit" + query, (res) ->
       data = ''
 
       res.on 'data', (chunk) ->
@@ -38,7 +44,7 @@ module.exports = (robot) ->
 
       res.on 'end', () ->
         joke = JSON.parse data
-        callback null, joke.value.joke
+        callback null, reformat joke.value.joke
 
       res.on 'error', (err) ->
         callback err ? new Error 'Error getting answer from youtrack'
