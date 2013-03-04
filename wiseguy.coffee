@@ -8,7 +8,7 @@ http = require 'http'
 #   tell a joke - tries to think of a joke
 
 module.exports = (robot) ->
-  robot.hear /(tell|say).*(?:a|something) (?:joke|funny)(?: about ([a-z]+\.[a-z]+|me|you))?/i, (msg) ->
+  robot.hear /(?:tell|say).*(?:a|something) (?:joke|funny)(?: about ([a-z]+\.[a-z]+|me|you))?/i, (msg) ->
     subject = getSubject msg.match[1], msg.message.user.name
     msg.send 'a joke about ' + subject + '...  Let me think about it...' if subject.length
     tellJoke = ->
