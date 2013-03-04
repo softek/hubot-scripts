@@ -1,5 +1,13 @@
 http = require 'http'
 
+# Description: 
+#   answers questions about the weather
+# 
+# Commands:
+#   describe weather - describes the weather
+#   how cold is it - describes the weather
+
+
 # http://w1.weather.gov/xml/current_obs/seek.php?state=mo&Find=Find#XML
 stationId = (process.env.HUBOT_WEATHERSTATION ? "KMCI").toUpperCase()
 
