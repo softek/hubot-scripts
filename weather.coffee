@@ -23,7 +23,7 @@ module.exports = (robot) ->
       msg.send text
 
 getWeather = (callback) ->
-  http.get "http://w1.weather.gov/xml/current_obs/#{stationId}.xml", (res) ->
+  http.get {host:"w1.weather.gov",path:"/xml/current_obs/#{stationId}.xml"}, (res) ->
     data = ''
 
     res.on 'data', (chunk) ->

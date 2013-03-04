@@ -36,7 +36,7 @@ module.exports = (robot) ->
       text = text.replace(/chuck/ig, 'Jon').replace(/Norris/ig, 'Skeet') + '\r\nOr was that Chuck Norris?' if skeet.test text unless norris.test text
       text
 
-    http.get "http://api.icndb.com/jokes/random?exclude=explicit" + query, (res) ->
+    http.get {host:"api.icndb.com", path:'/jokes/random?exclude=explicit' + query}, (res) ->
       data = ''
 
       res.on 'data', (chunk) ->
