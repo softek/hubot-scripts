@@ -54,8 +54,8 @@ module.exports = (robot) ->
       else if not issues.issue.length
         "#{msg.message.user.name}, I guess you get to go home because there's nothing to do"
       else
-        resp = "#{msg.message.user.name}, perhaps you will find one of these #{issues.issue.length} #{getProject(msg)} issues to your liking:\r\n"
         topIssues = if issues.issue.length <= 5 then issues.issue else issues.issue.slice 0, 5
+        resp = "#{msg.message.user.name}, perhaps you will find one of these #{topIssues} #{getProject(msg)} issues to your liking:\r\n"
         issueLines = for issue in topIssues
           summary = issue.field[0].value
           state = issue.field[1].value
