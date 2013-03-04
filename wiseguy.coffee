@@ -32,7 +32,7 @@ module.exports = (robot) ->
     
     reformat = (text) ->
       norris = /\b(blood|death|pain|round-?house|kick(ing|ed|s|)|grinds|rage|die|brutal|lethal|weapon|kill|bullet|eat|gun|ate|fecal)\b/i
-      skeet = /\b(?:class|factory|pattern|instantiate|interfaces|reflection|stand-up|pi|iTunes|installing|Quicktime|machine|infinite|loop|DDOS|GUI|programming|languages|keyboard|type-cast|Compiler|protocol|code|Turing|dereference|NULL|sudo|equality)/i
+      skeet = /\b(?:class|factory|pattern|instantiate|interfaces|reflection|stand-up|pi|iTunes|installing|Quicktime|machine|infinite|loop|DDOS|GUI|programming|languages|keyboard|type-cast|Compiler|protocol|code|Turing|dereference|NULL|sudo|equality)\b/i
       text = text.replace(/chuck/ig, 'Jon').replace(/Norris/ig, 'Skeet') + '\r\nOr was that Chuck Norris?' if skeet.test text unless norris.test text
       text
 
