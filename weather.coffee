@@ -10,7 +10,7 @@ youTalkinToMe = (msg, robot) ->
   input.indexOf(name) != -1
 
 module.exports = (robot) ->
-  robot.hear /(?:what|say|describe|tell).*weather/i, (msg) ->
+  robot.hear /(?:what|say|describe|tell).*weather|how (hot|warm|cool|cold)/i, (msg) ->
     return unless youTalkinToMe msg, robot
     getWeather (err, xml) ->
       get = (name) ->
