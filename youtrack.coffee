@@ -17,6 +17,9 @@ youTalkinToMe = (msg, robot) ->
   name = robot.name.toLowerCase()
   input.indexOf(name) != -1
 
+getProject = (msg) ->
+  s = msg.message.room.replace /-.*/, ''
+
 module.exports = (robot) ->
 
   robot.hear /what (are )?my issues/i, (msg) ->
@@ -26,13 +29,13 @@ module.exports = (robot) ->
     return unless youTalkinToMe msg, robot
     filter = "for:+#{getUserNameFromMessage(msg)}+state:-Resolved,%20-Completed,%20-Blocked%20,%20-{To%20be%20discussed}"
     askYoutrack "/rest/issue?filter=#{filter}&with=summary&with=state", (err, issues) -> 
-      handleIssues err, issues, msg
+      handleIssues err, issues, msg, filter
 
   robot.hear /what (can|might|should)\s+(I|we)\s+(do|work on)/i, (msg) ->
     return unless youTalkinToMe msg, robot
-    filter = "state:-Resolved,%20-Completed,%20-Blocked%20,%20-{To%20be%20discussed}"
-    askYoutrack "/rest/issue?filter=#{filter}&with=summary&with=state&max=25", (err, issues) -> 
-      handleIssues err, issues, msg
+    filter = "Project%3a%20#{getProject(msg)}%20state:-Resolved,%20-Completed,%20-Blocked%20,%20-{To%20be%20discussed}"
+    askYoutrack "/rest/issue?filter=#{filter}&with=summary&with=state&max=100", (err, issues) -> 
+      handleIssues err, issues, msg, filter
 
   hashTagYoutrackIssueNumber = /#([^-]+-[\d]+)/i
   robot.hear hashTagYoutrackIssueNumber, (msg) ->
@@ -45,21 +48,25 @@ module.exports = (robot) ->
       else
         msg.send "I'd love to tell you about it, but I couldn't find that issue"
 
-  handleIssues = (err, issues, msg) ->
-    console.log 'unknown MSG-----------------------' unless msg?
+  handleIssues = (err, issues, msg, filter) ->
     msg.send if err?
         'Not to whine, but\r\n' + err.toString()
       else if not issues.issue.length
         "#{msg.message.user.name}, I guess you get to go home because there's nothing to do"
       else
-        resp = "#{msg.message.user.name}, perhaps you will find one of these #{issues.issue.length} issues to your liking:\r\n"
-        issueLines = for issue in issues.issue
+        resp = "#{msg.message.user.name}, perhaps you will find one of these #{issues.issue.length} #{getProject(msg)} issues to your liking:\r\n"
+        topIssues = if issues.issue.length <= 5 then issues.issue else issues.issue.slice 0, 5
+        issueLines = for issue in topIssues
           summary = issue.field[0].value
           state = issue.field[1].value
           issueId = issue.id
           verb = (if state.toString() == "Open" then "Start" else "Finish")
-          "#{verb} \"#{summary}\" #{state} (http://#{host}/issue/#{issueId})"
+          "#{verb} \"#{summary}\" (http://#{host}/issue/#{issueId})"
         resp += issueLines.join ',\r\nor maybe '
+        if topIssues.length != issues.issue.length
+          url = "http://#{host}/issues/?q=#{filter}"
+          resp+= '\r\n' + "or maybe these #{issues.issue.length}: #{url}"
+        resp
 
   getUserNameFromMessage = (msg) ->
     user = msg.message.user.name
