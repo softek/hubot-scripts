@@ -34,7 +34,7 @@ url = require "url"
 
 module.exports = (robot) ->
   robot.respond /(what'?s? (on|playing?|song (is|was) (this|that)|(song )?are we listening to)\??|song me|music me)/i, (msg) ->
-    http.get(url.parse("http://ws.audioscrobbler.com/1.0/user/dustyburwell/recenttracks.rss"), (res) ->
+    http.get(url.parse("http://ws.audioscrobbler.com/1.0/user/illuminatesup/recenttracks.rss"), (res) ->
       data = ""
       res.on("data", (chunk) -> data += chunk.toString())
       res.on("end", () ->
