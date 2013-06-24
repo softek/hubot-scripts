@@ -55,4 +55,4 @@ module.exports = (robot) ->
         callback null, reformat joke.value.joke
 
       res.on 'error', (err) ->
-        callback err ? new Error 'Error getting answer from youtrack'
+        callback err ? new Error 'Error getting joke'

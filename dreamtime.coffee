@@ -2,8 +2,7 @@ http = require 'http'
 TextMessage = require('hubot').TextMessage
 
 # Description: 
-#   Listens for patterns matching youtrack issues and provides information about 
-#   them
+#   Tell the robot what to say or hear on a schedule as if in a dream.
 # 
 # Commands:
 #   robot tell me your dreams- List of dreams
