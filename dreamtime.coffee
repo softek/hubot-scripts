@@ -1,16 +1,27 @@
-http = require 'http'
-TextMessage = require('hubot').TextMessage
-
-# Description: 
+# Description:
 #   Tell the robot what to say or hear on a schedule as if in a dream.
 # 
+# Dependencies:
+#   None
+# 
+# Configuration:
+#   None
+# 
 # Commands:
-#   robot tell me your dreams- List of dreams
-#   robot forget dream (key)- Remove the dream #n
-#   robot dream [key] at (timeofday) on (dayPattern) hear (message) - hear an imaginary command at (timeOfDay) every (dayPattern)
-#   robot dream [key] at (timeofday) on (dayPattern) hear (message) - hear an imaginary command at (timeOfDay) every (dayPattern)
-#   robot dream [key] at (timeofday) hear|speak (message) - on dayPattern is optional
-#   robot dream (key) now - Ignore the schedule and have the specified dream right now
+#   hubot tell me your dreams- List of dreams
+#   hubot forget dream (key)- Remove the dream #n
+#   hubot dream [key] at (timeofday) on (dayPattern) hear (message) - hear an imaginary command at (timeOfDay) every (dayPattern)
+#   hubot dream [key] at (timeofday) on (dayPattern) hear (message) - hear an imaginary command at (timeOfDay) every (dayPattern)
+#   hubot dream [key] at (timeofday) hear|speak (message) - on dayPattern is optional
+#   hubot dream (key) now - Ignore the schedule and have the specified dream right now
+#
+# Notes:
+#   None
+# 
+# Author:
+#   jeremyrsellars
+
+http = require 'http'
 
 # http://en.wikipedia.org/wiki/You_talkin'_to_me%3F
 youTalkinToMe = (msg, robot) ->
@@ -54,7 +65,7 @@ module.exports = (robot) ->
     robot.messageRoom dream.room, dream.message
 
   dreamReceive = (dream) ->
-    robot.receive new TextMessage dream.user, dream.message, Math.floor(Math.random() * 2000000000).toString()
+    robot.receive new robot.TextMessage dream.user, dream.message, Math.floor(Math.random() * 2000000000).toString()
 
   robot.hear /dreams/i, (msg) ->
     return unless youTalkinToMe msg, robot
